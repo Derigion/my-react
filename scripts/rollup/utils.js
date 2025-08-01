@@ -21,5 +21,13 @@ export function getPackageJson(pkgName) {
 }
 
 export function getBaseRollupPlugins() {
-	return [cjs(), ts()];
+	return [
+		cjs(),
+		ts({
+			compilerOptions: {
+				noUnusedLocals: false,
+				noUnusedParameters: false
+			}
+		})
+	];
 }

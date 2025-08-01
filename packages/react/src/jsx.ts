@@ -33,7 +33,48 @@ export const jsx = function (
 	let key: Key = null;
 	let ref: Ref = null;
 	const props: Props = {};
+	for (const prop in config) {
+		const val = config[prop];
+		if (prop === 'key') {
+			if (val !== undefined) {
+				key = '' + val;
+			}
+			continue;
+		} else if (prop === 'ref') {
+			if (val !== undefined) {
+				ref = val;
+			}
+			continue;
+		} else if ({}.hasOwnProperty.call(config, prop)) {
+			props[prop] = val;
+		}
+	}
+	const childrenLength = maybeChildren.length;
+	if (childrenLength > 0) {
+		if (childrenLength === 1) {
+			props.children = maybeChildren[0];
+		} else if (childrenLength > 1) {
+			props.children = maybeChildren;
+		}
+	}
 
+	return ReactElement(type, key, ref, props);
+};
+
+// jsxDEV 支持开发模式下的额外参数
+export const jsxDEV = function (
+	type: ElementType,
+	config: any,
+	maybeKey: Key,
+	isStaticChildren: boolean,
+	source: any,
+	self: any
+) {
+	let key: Key = null;
+	let ref: Ref = null;
+	const props: Props = {};
+
+	// 处理config中的属性
 	for (const prop in config) {
 		const val = config[prop];
 		if (prop === 'key') {
@@ -51,16 +92,15 @@ export const jsx = function (
 		}
 	}
 
-	const childrenLength = maybeChildren.length;
-	if (childrenLength > 0) {
-		if (childrenLength === 1) {
-			props.children = maybeChildren[0];
-		} else if (childrenLength > 1) {
-			props.children = maybeChildren;
-		}
-	}
+	// 开发模式下的调试信息
+	console.log('jsxDEV called with:', {
+		type,
+		config,
+		maybeKey,
+		isStaticChildren,
+		source,
+		self
+	});
 
 	return ReactElement(type, key, ref, props);
 };
-
-export const jsxDEV = jsx;
